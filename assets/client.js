@@ -18,9 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
     iceGatheringLog = document.getElementById('ice-gathering-state');
     signalingLog = document.getElementById('signaling-state');
 
-    performConnection(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
+    // performConnection(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
 });
 
+function onOpenMQTT() {
+    performConnection(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
+}
 
 /** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** 
  ** Peer Connection
