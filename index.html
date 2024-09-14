@@ -1,429 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<head>
-		<meta charset="utf-8">
-		<meta content="width=device-width, initial-scale=1.0" name="viewport">
-		<meta content="" name="description">
-		<meta content="" name="keywords">
+    <title>MQTT Chat - MQTT-based chat client</title>
 
-		<title>Hung Pham</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
 
-		<!-- Favicons -->
-		<link href="assets/img/favicon.png" rel="icon">
-		<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  </head>
 
-		<!-- Google Fonts -->
-		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <body>
 
-		<!-- Vendor CSS Files -->
-		<link href="assets/vendor/aos/aos.css" rel="stylesheet">
-		<link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-		<link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-		<link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-		<link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <div class="container">
 
-		<!-- Template Main CSS File -->
-		<link href="assets/css/style.css" rel="stylesheet">
-	</head>
+      <div>
+        <h1>MQTT Chat</h1>
+        <p class="lead">A proof of concept around MQTT and text</p>
+      </div><br>
+      <div class="row">
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="mqtt-broker"><strong>MQTT Broker</strong></label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="broker.hostname.com" id="mqtt-broker">
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="mqtt-port"><strong>Port</strong></label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="mqtt-port">
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="username-input"><strong>Username</strong></label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Anonymous" id="username-input">
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="channel-input"><strong>Channel</strong></label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Not supported" id="channel-input" disabled>
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <div class="input-group">
+              <br>
+              <button class="btn btn-info padding-fix" type="button" id="connect-button">Connect</button>
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+      </div>
+      <div class="row">
+        <div id="mqtt-chat-window" class="chat-window">
+          <div class="chat-window-text col-xs-9" id="mqtt-chat">
+          </div>
+          <div class="user-sidepane col-xs-3">
+            <h4><strong>Users</strong></h4>
+            <div id="mqtt-users"></div>
+          </div>
+        </div>
+      </div><br>
+      <div class="row">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Write something..." id="chat-input">
+            <span class="input-group-btn">
+              <button class="btn btn-primary" type="button" id="reply-button">Reply</button>
+            </span>
+          </div><!-- /input-group -->
+        </div>
+      </div>
 
-	<body>
-		<!-- ======= Mobile nav toggle button ======= -->
-		<i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
+    </div><!-- /.container -->
 
-		<!-- ======= Header ======= -->
-		<header id="header">
-			<div class="d-flex flex-column">
-				<div class="profile">
-					<img src="assets/img/profile-img.png" alt="" class="img-fluid rounded-circle">
-					<h1 class="text-light"><a href="index.html">PHAM NGUYEN</a></h1>
-					<h1 class="text-light"><a href="index.html">QUOC HUNG</a></h1>
-					<div class="social-links mt-3 text-center">
-						<a href="https://www.linkedin.com/in/pham-hung-a12449213" class="linkedin"><i class="bx bxl-linkedin"></i></a>
-						<a href="https://github.com/hunqp" class="github"><i class="bx bxl-github"></i></a>
-					</div>
-				</div>
-				<nav id="navbar" class="nav-menu navbar">
-					<ul>
-						<li><a href="#hero" class="nav-link scrollto active"><i class="bx bx-home"></i> <span>Home</span></a></li>
-						<li><a href="#about" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
-						<li><a href="#resume" class="nav-link scrollto"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
-						<li><a href="#skills" class="nav-link scrollto"><i class="bx bx-target-lock"></i> <span>Skills</span></a></li>
-						<li><a href="#portfolio" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Project</span></a></li>
-						<li><a href="#contact" class="nav-link scrollto"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
-					</ul>
-				</nav>
-			</div>
-		</header>
-		<!-- End Header -->
 
-		<!-- ======= Hero Section ======= -->
-		<section id="hero" class="d-flex flex-column justify-content-center align-items-center">
-			<div class="hero-container" data-aos="fade-in">
-				<h1>
-					PHAM NGUYEN QUOC HUNG
-				</h1>
-				<p>
-					I am <span class="typed" data-typed-items="Embedded Software Engineer"></span>
-				</p>
-			</div>
-		</section>
-		<!-- End Hero -->
-
-		<main id="main">
-			<!-- ======= About Section ======= -->
-			<section id="about" class="about">
-				<div class="container">
-					<div class="section-title">
-						<h2>
-							About
-						</h2>
-						<p style="font-style: italic;">
-							Welcome to my personal webpage,
-						</p>
-						<p>
-							I am an embedded software engineer with over 1 years of experience in developing and deploying complex embedded systems.
-							With a deep passion for this field and a solid understanding of embedded programming languages, I have been involved in and 
-							succeeded in numerous critical and diverse projects.
-						</p>
-						<p>
-							Throughout my career, I have:
-						</p>
-						<ul>
-							<li>
-								<strong>Firmware Development</strong>: I have been involved in firmware development for embedded systems, ensuring stability and high performance.
-							</li>
-							<li>
-								<strong>Troubleshooting and Maintenance</strong>: I have the ability to quickly analyze and resolve issues in embedded infrastructure, ensuring that systems operate smoothly.
-							</li>
-							<li>
-								<strong>Researching New Technologies</strong>: I am always curious and researching new technologies to improve performance and integrate new solutions into projects.
-							</li>
-							<li>
-								<strong>Team Support</strong>: I have the ability to work efficiently in a team and support other team members in the development and deployment of projects.
-							</li>
-						</ul>
-						<p>
-							I hope that my knowledge and experience can contribute to the growth and success of your company or project.
-						</p>
-						<p>
-							Thank you for considering my profile.
-						</p>
-					</div>
-					<div class="row">
-						<div class="col-lg-4" data-aos="fade-right">
-							<img src="assets/img/my-graduation.png" class="img-fluid" alt="">
-						</div>
-						<div class="col-lg-8 pt-4 pt-lg-0 content" data-aos="fade-left">
-							<h3>
-								Embedded Software Engineer
-							</h3>
-							<p class="fst-italic">
-								About me:
-							</p>
-							<div class="row">
-								<div class="col-lg-6">
-									<ul>
-										<li><i class="bi bi-chevron-right"></i> <strong>Birthday:</strong> <span>19 July 1999</span></li>
-										<li><i class="bi bi-chevron-right"></i> <strong>Website:</strong> <span><a href="https://hunqp.github.io" target=”_blank”>hunqp.github.io</a></span></li>
-										<li><i class="bi bi-chevron-right"></i> <strong>Phone:</strong> <span><a href="tel:+33623940753">0969875740</a></span></li>
-										<li><i class="bi bi-chevron-right"></i> <strong>City:</strong> <span><a href="https://www.google.com/maps/place/Lyon/" target=”_blank”>Tan Binh District, Ho Chi Minh City</a></span></li>
-									</ul>
-								</div>
-								<div class="col-lg-6">
-									<ul>
-										<li><i class="bi bi-chevron-right"></i> <strong>Degree:</strong> <span>Engineering</span></li>
-										<li><i class="bi bi-chevron-right"></i> <strong>Email:</strong> <span><a href="mailto:alvesbrandon21@gmail.com">hungpham99er@gmail.com</a></span></li>
-											<li><i class="bi bi-chevron-right"></i> <strong>Resume:</strong> <span><a href="assets/pdf/Resume.pdf" download>Download</a></span></li>
-									</ul>
-								</div>
-							</div>
-							<p>
-								<!-- Officiis eligendi itaque labore et dolorum mollitia officiis optio vero. Quisquam sunt adipisci omnis et ut. Nulla accusantium dolor incidunt officia tempore. Et eius omnis.
-								Cupiditate ut dicta maxime officiis quidem quia. Sed et consectetur qui quia repellendus itaque neque. Aliquid amet quidem ut quaerat cupiditate. Ab et eum qui repellendus omnis culpa magni laudantium dolores. -->
-							</p>
-						</div>
-					</div>
-				</div>
-			</section>
-			<!-- End About Section -->
-
-			<!-- ======= Resume Section ======= -->
-			<section id="resume" class="resume section-bg">
-				<div class="container">
-					<div class="section-title">
-						<h2>Resume</h2>
-						<p>
-
-						</p>
-					</div>
-					<div class="row">
-						<div class="col-lg-6" data-aos="fade-up">
-							<h3 class="resume-title">Instruction</h3>
-							<div class="resume-item">
-								<h4>SAI GON UNIVERSITY</h4>
-								<h5>2017 - 2022</h5>
-								<p>
-									<strong>Specialization</strong>: Telecommunications Electronics
-								</p>
-								<p>
-									<strong>GPA</strong>: 2.73/4.0
-								</p>
-								<p>
-									<strong>TOEIC</strong>: 545
-								</p>
-							</div>
-
-							<h3 class="resume-title">Training</h3>
-							<div class="resume-item">
-								<h4>Commercial & Technical STD Company (Internship)</h4>
-								<h5>07/2020 - 08/2020</h5>
-								<ul>
-									<li>Support repairing damaged UPS devices.</li>
-									<li>Research PROLiNK Sonority II Wireless Smart Speaker for device control via voice commands.</li>
-									<li>Participate in installation and maintenance of UPS battery units in buildings.</li>
-								</ul>
-							</div>
-							<div class="resume-item">
-								<h4>FPT Telecom – IoT LAB (Internship)</h4>
-								<h5>05/2021 - 05/2022</h5>
-								<ul>
-									<li>Learn data structures and algorithms, practiced solving problems on platforms like Codeforces, SPOJ, UVA, Hackerrank.</li>
-									<li>Explore and approach architectures designed for embedded systems (RTOS, Event-Driven).</li>
-									<li>Experience with the GNU/Linux Ubuntu operating system and command-line interface.</li>
-								</ul>
-							</div>
-						</div>
-							
-						<div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-							<h3 class="resume-title">Experience</h3>
-							<div class="resume-item">
-								<h4>FPT Telecom – IoT LAB</h4>
-								<h5>05/2022 - Present</h5>
-								<p><em>Embedded Software Engineer</em></p>
-								<ul>
-									<li>Assume the role of developing firmware for management and monitoring systems and devices.</li>
-									<li>Receive requests for system troubleshooting and maintenance when there are incidents on the infrastructure where equipment is installed.</li>
-									<li>Research new solutions and technologies to serve technical issues.</li>
-									<li>Supporting interns in their learning process and guiding their career paths.</li>
-								</ul>						
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</section>
-			<!-- End Resume Section -->
-
-			<!-- ======= Skills Section ======= -->
-			<section id="skills" class="skills">
-				<div class="container">
-					<div class="section-title">
-						<h2>Skills</h2>
-						<p>My most relevant skills are the following:</p>
-					</div>
-					<div class="row skills-content">
-						<div class="col-lg-6" data-aos="fade-up">
-							<p><strong>Technical skills</strong></p>
-								<ul>
-									<li>Programming Languages: C/C++, Shell script, Makefiles for build automation.</li>
-									<li>Microcontroller and Microprocessor Familiarity: ARM, AVR, PIC.</li>
-									<li>Embedded Operating Systems: FreeRTOS, Linux.</li>
-									<li>Platform and Framework: ESP-IDF, STM32CubeIDE, Visual Studio, Qt.</li>
-									<li>Communication Protocols: UART, SPI, I2C, CAN, Ethernet, USB.</li>
-									<li>Network Protocols: Socket, UDP/TCP, MQTT, BLE, Wifi, Modbus.</li>
-									<li>Knowledge of FOTA, Bootloader for embedded system.</li>
-									<li>Design HMI (HMI Delta) and LUA Script programming using DOPSoft.</li>
-								</ul>
-							</p>
-						</div>
-						<div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-							<p><strong>Soft skills</strong></p>
-								<ul>
-									<li>Logic analysis for debugging and testing.</li>
-									<li>Schematic analysis and technical documents.</li>
-									<li>Ability to work independently, research to solve issues during project execution.</li>
-								</ul>
-							</p>
-							<p><strong>Teamwork skills</strong></p>
-								<ul>
-									<li>Ability to work effectively in a team environment.</li>
-									<li>Listening and communication and collaboration.</li>
-									<li>Sharing knowledge and expertise with team members.</li>
-								</ul>
-							</p>
-						</div>
-					</div>
-				</div>
-			</section>
-			<!-- End Skills Section -->
-
-			<!-- ======= Project Section ======= -->
-			<section id="portfolio" class="portfolio">
-				<div class="container">
-					
-					<h2>Project</h2>
-					<p>
-						Here are some of my projects.
-					</p>
-
-					<section id="portfolio-details" class="portfolio-details">
-						<div class="container">
-							<div class="row gy-4">
-								<div class="col-lg-4" style="width: 100%;">
-									<div class="portfolio-info">
-										<h3>Real-time Locating System</h3>
-										<ul>
-											<li><strong>Project date</strong>: July 2022 - September 2022</li>
-											<li>
-												<strong>Description</strong>:
-												<p>
-													A Real-time Locating System (RTLS) utilizes UWB (Ultra-Wideband) technology to enable real-time
-													device positioning, also known as tag.<br>The system comprises:
-												</p>
-											</li>
-											<li>
-												<strong>Contribution</strong>: Firmware developement.									
-											</li>
-											<li><strong>Tech Stack</strong>: C/C++, Makefile, Git, Logic Analysis Pulse, Decawave DRTLS Manager.</li>
-										</ul>
-									</div>
-								</div>
-								<div class="col-lg-4" style="width: 100%;">
-									<div class="portfolio-info">
-										<h3>Outdoor POP Monitoring System</h3>
-										<ul>
-											<li><strong>Project date</strong>: October 2022 – August 2023</li>
-											<li><strong>Description</strong>: 
-												OPMS (Operations and Infrastructure Management System) is a system designed to manage and
-												monitor FPT Telecom's infrastructure through sensors and algorithms. It is intended to control
-												devices in critical situations.
-											</li>
-											<li>
-												<strong>Contribution</strong>: Firmware developement and testing.									
-											</li>
-											<li><strong>Tech Stack</strong>: C/C++, Makefile, Git, Shell script, DSView, SVN, MQTT, Modbus.</li>
-										</ul>
-									</div>
-								</div>
-								<div class="col-lg-4" style="width: 100%;">
-									<div class="portfolio-info">
-										<h3>Roof Security System</h3>
-										<ul>
-											<li><strong>Project date</strong>: April 2023 – June 2023</li>
-											<li><strong>Description</strong>: 
-												Roof Security System monitors and warns of intrusion based on signals from sensors and provides
-												timely warnings in case of unauthorized intrusion from the roof.
-											</li>
-											<li>
-												<strong>Contribution</strong>: Firmware developement.									
-											</li>
-											<li><strong>Tech Stack</strong>: C/C++, Makefile, Git, Shell script, Tailscale, Thingsboard, FriendlyARM., Modbus.</li>
-										</ul>
-									</div>
-								</div>
-								<div class="col-lg-4" style="width: 100%;">
-									<div class="portfolio-info">
-										<h3>ODF Automated Infrastructure Management</h3>
-										<ul>
-											<li><strong>Project date</strong>: April 2023 – July 2023</li>
-											<li><strong>Description</strong>: 
-												ODF AIM is a monitoring and management system for FPT Telecom's Optical Distribution Frames
-												(ODF) infrastructure
-											</li>
-											<li>
-												<strong>Contribution</strong>: Firmware developement.									
-											</li>
-											<li><strong>Tech Stack</strong>: C/C++, Makefile, Git, CAN Bus.</li>
-										</ul>
-									</div>
-								</div>
-								<div class="col-lg-4" style="width: 100%;">
-									<div class="portfolio-info">
-										<h3>Operation Monitor Base Transciever Station</h3>
-										<ul>
-											<li><strong>Project date</strong>: August 2023 – September 2023</li>
-											<li><strong>Description</strong>: 
-												OMBTS station monitoring system solution based on device management files on gateway (NanoPi
-												NEO). Developers can easily integrate their systems into the monitoring suite through editing
-												these management files.
-											</li>
-											<li>
-												<strong>Contribution</strong>: Firmware developement.									
-											</li>
-											<li><strong>Tech Stack</strong>: C/C++, Makefile, Git, FriendlyARM, Modbus.</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-				</div>
-			</section>
-
-			<!-- ======= Contact Section ======= -->
-			<section id="contact" class="contact section-bg">
-				<div class="container">
-					<div class="section-title">
-						<h2>Contact</h2>
-						<p>Feel free to reach me out:</p>
-					</div>
-					<div class="row">
-						<div class="info">
-							<div class="" data-aos="">
-								<div class="address">
-									<i class="bi bi-linkedin"></i>
-									<h4>LinkedIn:</h4>
-									<p><a href="https://www.linkedin.com/in/pham-hung-a12449213/" target=”_blank”>Pham Hung<a/></p>
-								</div>
-								<div class="email">
-									<i class="bi bi-envelope"></i>
-									<h4>Email:</h4>
-									<p>hungpham99er@gmail.com</p>
-								</div>
-								<div class="phone">
-									<i class="bi bi-phone"></i>
-									<h4>Phone:</h4>
-									<p>0969875740</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-			<!-- End Contact Section -->
-		</main>
-		<!-- End #main -->
-
-		<!-- ======= Footer ======= -->
-		<footer id="footer">
-			<div class="container">
-				<div class="copyright">
-					&copy; Copyright <strong><span>Brandon Alves</span></strong>
-				</div>
-				<div class="credits">
-				</div>
-			</div>
-		</footer>
-		<!-- End	Footer -->
-
-		<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-		<!-- Vendor JS Files -->
-		<script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-		<script src="assets/vendor/aos/aos.js"></script>
-		<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-		<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-		<script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-		<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-		<script src="assets/vendor/typed.js/typed.min.js"></script>
-		<script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
-		<script src="assets/vendor/php-email-form/validate.js"></script>
-
-		<!-- Template Main JS File -->
-		<script src="assets/js/main.js"></script>
-
-	</body>
-
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/mqttws31.js" type="text/javascript"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/mqtt-chat-client.js"></script>
+    <script src="js/mqtt-client.js"></script>
+  </body>
 </html>
