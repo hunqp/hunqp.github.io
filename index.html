@@ -1,56 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>IPC Webadmin</title>
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <style>
-        #messages {
-            border: 1px solid #ddd;
-            height: 300px;
-            overflow-y: scroll;
-            padding: 10px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="connection.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <title>IP Camera</title>
 </head>
 <body>
-    <button class="button" onclick="performConnect()">Connect</button>
-    <h2 id="status-connection" style="font-style: italic;">Status</h2>
-    <div id="messages"></div>
+    <div class="container">
+        <div class="left-frames">
+            <div class="frame1">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Chipset</th>
+                            <th>Version</th>
+                            <th>CPU (%)</th>
+                            <th>Last connected</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="product-id"></td>
+                            <td id="chipset"></td>
+                            <td id="version" class="status-active"></td>
+                            <td id="cpu"></td>
+                            <td id="last-connected"></td>
+                            <td><button id="create-signaling" onclick="onSignaling()">Watch</button></td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="frame2">
+                <!-- Content for Frame 2 (e.g., empty or additional info) -->
+            </div>
+        </div>
+        <div class="frame3">
+            <div id="media">
+                NO SIGNAL
+                <video id="video" autoplay playsinline></video>
+            </div>
+        </div>
+    </div>
 </body>
-<script>
-    const host = "wss://broker.emqx.io:8084/mqtt";
-    // const host = "ws://demo.thingsboard.io:1883/mqtt";
-
-    function setState(state) {
-        document.getElementById('status-connection').textContent = state;
-    }
-
-    function performConnect() {
-        setState("Trying to connect...");
- 
-        const client = mqtt.connect(host, 8084);
-
-        client.on('connect', () => {
-            setState("Connected");
-        });
-
-        client.on('message', (topic, message) => {
-            const messageDiv = document.getElementById('messages');
-            messageDiv.innerHTML += `<p><strong>${topic}:</strong> ${message.toString()}</p>`;
-            messageDiv.scrollTop = messageDiv.scrollHeight;
-        });
-
-        client.on('error', (error) => {
-            console.error('Connection error:', error);
-            setState("Connection error");
-        });
-
-        client.on('close', () => {
-            console.log('Disconnected');
-            setState("Disconnected");
-        });
-    }
-</script>
 </html>
-
