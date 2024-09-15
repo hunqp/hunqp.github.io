@@ -1,4 +1,4 @@
-const MQTT_BROKER_HOST      = "ws://broker.emqx.io:8083/mqtt";
+const MQTT_BROKER_HOST      = "wss://broker.emqx.io:8084/mqtt";
 const MQTT_PUBLISH_TOPIC    = "ipc/devices/me/request";
 const MQTT_SUBSCRIBE_TOPIC  = "ipc/devices/me/respond";
 
@@ -9,68 +9,10 @@ let bHostConnected = false;
  ** MQTT Connection
  ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** 
 */
-// document.addEventListener('DOMContentLoaded', function() {
-//     document.getElementById('media').style.display = 'none';
-//     document.getElementById('create-signaling').style.display = 'none';
-
-//     mosqp = mqtt.connect(MQTT_BROKER_HOST);
-
-//     mosqp.on('connect', () => {
-//         console.log("Connected to " + MQTT_BROKER_HOST);
-//         mosqp.subscribe(MQTT_SUBSCRIBE_TOPIC);
-
-//         /* Send salutation message */
-//         let serial = document.getElementById('product-id').textContent;
-//         const msg = JSON.stringify({
-//             Method: "SET",
-//             Serial: serial,
-//             Command: "Request",
-//             MessageType: "DeviceStatus"
-//         });
-//         mosqp.publish(MQTT_PUBLISH_TOPIC, msg);
-//     });
-
-//     mosqp.on('message', (topic, message) => {
-//         // console.log(`Received message. Payload: ${message.toString()}. Topic: ${topic}`);
-//         try {
-//             const msg = JSON.parse(message.toString());
-    
-//             if (msg.Command === "Respond") {
-//                 if (msg.MessageType == "Signaling") {
-//                     console.log(msg.Data);
-//                     if (!bPeerCreated) {
-//                         if (msg.Data.type == "offer") {
-//                             handleOffer(msg.Data);
-//                         }
-//                     }
-//                 }
-//                 else if (msg.MessageType == "DeviceStatus") {
-//                     document.getElementById('product-id').textContent = msg.Data.ProductID;
-//                     document.getElementById('chipset').textContent = msg.Data.Chipset;
-//                     document.getElementById('version').textContent = msg.Data.Version;
-//                     document.getElementById('cpu').textContent = msg.Data.CPU;
-//                     document.getElementById('last-connected').textContent = timestampToDatetime(msg.Data.Timestamp);
-//                     document.getElementById('create-signaling').style.display = 'block';
-//                 }
-//             }
-//         }
-//         catch (error) {
-//             alert(message.payloadString);
-//         }
-//     });
-
-//     mosqp.on('reconnect', () => {
-//         console.log("Reconnect to " + MQTT_BROKER_HOST);
-//     });
-
-//     mosqp.on('error', (error) => {
-//         alert("Can't establish MQTT connection" + MQTT_BROKER_HOST);
-//     });
-
-//     mosqp.on('close', () => {
-//         alert("Can't connect to " + MQTT_BROKER_HOST);
-//     });
-// });
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('media').style.display = 'none';
+    document.getElementById('create-signaling').style.display = 'none';
+});
 
 function openSession() {
     document.getElementById('media').style.display = 'none';
