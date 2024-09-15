@@ -11,8 +11,9 @@ body {
 
 .container {
     display: flex;
+    flex-direction: row; /* Default for larger screens */
     width: 90%;
-    max-width: 1200px; /* Max width for large screens */
+    max-width: 1200px; /* Max width for larger screens */
     height: 90%;
     border-radius: 10px;
     overflow: hidden;
@@ -49,7 +50,7 @@ body {
     justify-content: center;
     align-items: center;
     background: #000;
-    height: calc(100% - 40px); /* Account for margin */
+    height: calc(100% - 40px); /* Adjust for margin */
     margin: 20px;
     border-radius: 10px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
@@ -116,12 +117,31 @@ button:hover {
         height: auto;
     }
 
+    .left-frames {
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
     .frame3 {
         width: 100%;
-        height: 300px; /* Adjust height for smaller screens */
+        height: 300px; /* Adjusted height for smaller screens */
         margin: 0;
         border-left: none;
         border-top: 1px solid #ddd;
+    }
+
+    /* Responsive text sizes */
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.2em; /* General heading size for tablets */
+    }
+
+    table {
+        font-size: 14px; /* Adjust font size for better readability */
+    }
+
+    button {
+        padding: 8px 14px;
+        font-size: 16px;
     }
 }
 
@@ -136,10 +156,15 @@ button:hover {
 
     button {
         padding: 4px 8px;
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .frame3 {
         height: 200px; /* Further adjust height for very small screens */
+    }
+
+    /* Responsive text sizes */
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1em; /* Smaller heading size for small phones */
     }
 }
