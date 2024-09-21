@@ -1,170 +1,231 @@
-body {
+body, html {
     margin: 0;
     padding: 0;
+    height: 100%;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4; /* Light Gray Background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    background-color: #f0f0f0; /* Light background color */
 }
 
 .container {
     display: flex;
-    flex-direction: row; /* Default for larger screens */
-    width: 90%;
-    max-width: 1200px; /* Max width for larger screens */
-    height: 90%;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: calc(100vh - 40px);
+    margin: 20px;
+    gap: 10px;
 }
 
-.left-frames {
+.left-pane {
     display: flex;
     flex-direction: column;
     flex: 1;
-    border-right: 1px solid #ddd;
-    overflow: hidden;
+    gap: 10px;
 }
 
-.frame1, .frame2 {
-    flex: 1;
+.top-pane {
+    flex: 0 1 30%;
     padding: 20px;
-    overflow: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* White for the top pane */
 }
 
-.frame1 {
-    background-color: #fff;
+.bottom-pane {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 0; /* No padding for bottom pane */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* White for the bottom pane */
 }
 
-.frame2 {
-    background-color: #f9f9f9;
+.tab-container {
+    display: flex;
+    border-bottom: 2px solid dimgrey; /* Main color */
+    margin-bottom: 0; /* No margin for tabs */
 }
 
-.frame3 {
-    width: 50%;
-    border-left: 1px solid #ddd;
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #e0e0e0; /* Light gray */
+    border: none;
+    font-size: 16px;
+    color: #555; /* Dark gray text */
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0; /* Rounded top corners */
+    margin-right: 2px; /* Small space between tabs */
+    position: relative; /* For tab indicator */
+}
+
+.tab.active {
+    font-weight: bold;
+    color: #ffffff; /* White text for active tab */
+    background-color: dimgrey; /* Main color for active tab */
+    border-bottom: 2px solid #ffffff; /* White underline */
+}
+
+.content {
+    flex: 1;
+    display: none;
+    padding: 20px;
+    border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+    background-color: #f8f9fa; /* Light gray for content background */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.active {
+    display: block;
+}
+
+.arrow-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.arrow-row {
     display: flex;
     justify-content: center;
-    align-items: center;
-    background: #000;
-    height: calc(100% - 40px); /* Adjust for margin */
-    margin: 20px;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.frame3 video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.arrow-button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: dimgrey; /* Main color */
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    text-align: center;
+    width: 50px; /* Set a fixed width */
+    height: 50px; /* Set a fixed height */
+    margin: 5px; /* Margin for spacing */
+    transition: background-color 0.2s ease;
+}
+
+.arrow-button:hover {
+    background-color: #004c45; /* Darker shade on hover */
+}
+
+.right-pane {
+    flex: 1;
+    background-color: #e0e0e0;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.scrollable-table {
+    max-height: 300px; /* Adjust the height as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    border-radius: 8px; /* Optional: Rounded corners */
 }
 
 table {
     width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-collapse: collapse; /* Ensure proper spacing */
 }
 
 th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
 }
 
 th {
-    background-color: #f5f5f5;
+    background-color: #e0e0e0; /* Header background color */
     font-weight: bold;
 }
 
-tr:hover {
-    background-color: #f1f1f1;
+video {
+    width: 100%;
 }
 
-.status-active {
-    color: #4CAF50;
-    font-weight: bold;
+#media {
+    max-width: 1280px;
 }
 
-.status-inactive {
-    color: #F44336;
-    font-weight: bold;
-}
-
-button {
-    padding: 6px 12px;
-    font-size: 14px;
-    color: #fff;
-    background-color: #007bff;
+.icon-button {
+    padding: 5px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
+    background-color: dimgrey; /* Main color */
+    color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 18px;
+    text-align: center;
+    width: 40px; /* Set a fixed width */
+    height: 40px; /* Set a fixed height */
 }
 
-button:hover {
-    background-color: #0056b3;
-}
-
-/* Media queries for responsive design */
 @media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        height: auto;
-    }
-
-    .left-frames {
-        border-right: none;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .frame3 {
-        width: 100%;
-        height: 300px; /* Adjusted height for smaller screens */
-        margin: 0;
-        border-left: none;
-        border-top: 1px solid #ddd;
-    }
-
-    /* Responsive text sizes */
-    h1, h2, h3, h4, h5, h6 {
-        font-size: 1.2em; /* General heading size for tablets */
-    }
-
-    table {
-        font-size: 14px; /* Adjust font size for better readability */
-    }
-
-    button {
-        padding: 8px 14px;
-        font-size: 16px;
-    }
+body, html {
+    font-size: 14px; /* Base font size for mobile */
 }
 
-@media (max-width: 480px) {
-    .frame1, .frame2 {
-        padding: 10px;
-    }
+.container {
+    flex-direction: column; /* Stack the panes vertically */
+    margin: 10px; /* Reduced margin */
+}
 
-    table {
-        font-size: 12px; /* Smaller font size for better readability on small screens */
-    }
+.left-pane, .right-pane {
+    flex: none; /* Allow them to take full width */
+    width: 100%; /* Full width on mobile */
+}
 
-    button {
-        padding: 4px 8px;
-        font-size: 14px;
-    }
+.top-pane, .bottom-pane {
+    padding: 10px; /* Reduced padding */
+    border-radius: 5px; /* Slightly rounded corners */
+}
 
-    .frame3 {
-        height: 200px; /* Further adjust height for very small screens */
-    }
+.tab {
+    padding: 8px; /* Smaller tab size */
+    font-size: 14px; /* Smaller font size */
+    margin: 2px; /* Reduce margin between tabs */
+}
 
-    /* Responsive text sizes */
-    h1, h2, h3, h4, h5, h6 {
-        font-size: 1em; /* Smaller heading size for small phones */
-    }
+.arrow-button {
+    width: 40px; /* Uniform button size */
+    height: 40px; /* Uniform button size */
+    font-size: 14px; /* Smaller font size */
+    margin: 3px; /* Adjust margin for spacing */
+}
+
+.content {
+    padding: 10px; /* Reduced padding */
+}
+
+.scrollable-table {
+    max-height: 200px; /* Reduce max height for smaller screens */
+    overflow-y: auto; /* Enable scrolling */
+}
+
+table {
+    width: 100%; /* Full width for tables */
+    font-size: 12px; /* Smaller font size for table */
+}
+
+th, td {
+    padding: 8px; /* Reduced padding for table cells */
+}
+
+h1 {
+    font-size: 18px; /* Smaller heading */
+}
+
+video {
+    max-width: 100%; /* Ensure video fits within the container */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#playlist-records {
+    margin-top: 10px; /* Reduced margin */
+}
+
+.top-pane {
+    overflow-x: auto; /* Allow horizontal scrolling for the top pane */
+}
 }

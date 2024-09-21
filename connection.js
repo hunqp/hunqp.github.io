@@ -1,62 +1,122 @@
+function showContent(contentId) {
+    const contents = document.querySelectorAll('.content');
+    contents.forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById('bottom-' + contentId).classList.add('active');
+
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    if (contentId === 'left') {
+        tabs[0].classList.add('active');
+    } else {
+        tabs[1].classList.add('active');
+    }
+}
+
+function queryPlaylist() {
+    const startDate = new Date(document.getElementById('start-date').value);
+    const endDate = new Date(document.getElementById('end-date').value);
+    const tableBody = document.querySelector('#records-table tbody');
+
+    // Clear previous records
+    tableBody.innerHTML = '';
+
+    // Simulate fetching records based on the date range
+    const records = [
+        { id: 1, title: 'Record A', timestamp: '2024-09-19T10:00:00' },
+        { id: 2, title: 'Record B', timestamp: '2024-09-19T12:30:00' },
+        { id: 3, title: 'Record C', timestamp: '2024-09-19T14:00:00' },
+        { id: 4, title: 'Record C', timestamp: '2024-09-19T14:00:00' },
+        { id: 5, title: 'Record C', timestamp: '2024-09-19T14:00:00' },
+        { id: 6, title: 'Record C', timestamp: '2024-09-19T14:00:00' },
+        { id: 7, title: 'Record C', timestamp: '2024-09-19T14:00:00' },
+        // Add more sample records as needed
+    ];
+
+    records.forEach(record => {
+        const recordDate = new Date(record.timestamp);
+        
+        // Ensure we compare the start and end dates properly
+        if (recordDate >= startDate && recordDate <= endDate) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${record.id}</td>
+                <td>${record.title}</td>
+                <td>${record.timestamp}</td>
+            `;
+            tableBody.appendChild(row);
+        }
+    });
+
+    // Check if any records were found
+    if (tableBody.innerHTML === '') {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="3">No records found</td>`;
+        tableBody.appendChild(row);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
 const MQTT_BROKER_HOST      = "wss://broker.emqx.io:8084/mqtt";
 const MQTT_PUBLISH_TOPIC    = "ipc/devices/me/request";
 const MQTT_SUBSCRIBE_TOPIC  = "ipc/devices/me/respond";
 
+let Sn;
 let mosqp;
-let bHostConnected = false;
+let pc = null;
+let dc = null;
+let isPeerCreated = false;
+const clientId = randomId(5);
 
-/** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** 
- ** MQTT Connection
- ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** 
-*/
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('media').style.display = 'none';
-    document.getElementById('create-signaling').style.display = 'none';
+////////////////////////////////////////////////////////////////////////////////////////////
+document.addEventListener('DOMContentLoaded', () => {
+    hideP2PComponents(true);
+    setTimeout(main, 500);
 });
 
-function openSession() {
+////////////////////////////////////////////////////////////////////////////////////////////
+function main() {
+    /* Hide components 
+    */
     document.getElementById('media').style.display = 'none';
-    document.getElementById('create-signaling').style.display = 'none';
 
+    /* DO: Start MQTT Connection 
+    */
     mosqp = mqtt.connect(MQTT_BROKER_HOST);
 
     mosqp.on('connect', () => {
-        document.getElementById('open-session').style.display = 'none';
         console.log("Connected to " + MQTT_BROKER_HOST);
         mosqp.subscribe(MQTT_SUBSCRIBE_TOPIC);
 
         /* Send salutation message */
-        let serial = document.getElementById('product-id').textContent;
         const msg = JSON.stringify({
             Method: "SET",
-            Serial: serial,
-            Command: "Request",
-            MessageType: "DeviceStatus"
+            Sn: "BROADCAST",
+            MessageType: "Request",
+            Command: "Production"
         });
         mosqp.publish(MQTT_PUBLISH_TOPIC, msg);
     });
 
     mosqp.on('message', (topic, message) => {
-        // console.log(`Received message. Payload: ${message.toString()}. Topic: ${topic}`);
         try {
             const msg = JSON.parse(message.toString());
+            console.log(msg);
     
-            if (msg.Command === "Respond") {
-                if (msg.MessageType == "Signaling") {
+            if (msg.MessageType === "Respond") {
+                if (msg.Command === "Signaling") {
                     console.log(msg.Data);
-                    if (!bPeerCreated) {
-                        if (msg.Data.type == "offer") {
+                    if (!isPeerCreated) {
+                        if (msg.Data.type === "offer") {
                             handleOffer(msg.Data);
                         }
                     }
                 }
-                else if (msg.MessageType == "DeviceStatus") {
-                    document.getElementById('product-id').textContent = msg.Data.ProductID;
-                    document.getElementById('chipset').textContent = msg.Data.Chipset;
-                    document.getElementById('version').textContent = msg.Data.Version;
-                    document.getElementById('cpu').textContent = msg.Data.CPU;
-                    document.getElementById('last-connected').textContent = timestampToDatetime(msg.Data.Timestamp);
-                    document.getElementById('create-signaling').style.display = 'block';
+                else if (msg.Command == "Production") {
+                    updateListTableDevices(msg.Data);
                 }
             }
         }
@@ -87,33 +147,21 @@ function performPublish(msg) {
     }
 }
 
-/** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** 
- ** Peer Connection
- ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** 
-*/
-let bPeerCreated = false;
-let pc = null;
-let dc = null;
-const clientId = randomId(5);
+////////////////////////////////////////////////////////////////////////////////////////////
+function openSignaling(serial) {
+    if (!isPeerCreated) {
+        /* Create Peer Connection */
+        Sn = serial;
 
-function onSignaling() {
-    if (!bPeerCreated) {
-        ////////////////////////   Create Peer Connection   ////////////////////////
-        let serial = document.getElementById('product-id').textContent;
-        const msg = JSON.stringify({
-            Method: "SET",
-            Serial: serial,
-            Command: "Request",
-            MessageType: "Signaling",
-            Data: {
-                id: clientId,
-                type: "request"
-            }
-        });
+        const data = {
+            id: clientId,
+            type: "request"
+        };
+        const msg = templateMessageTypeRequest("Signaling", data);
         performPublish(msg);
     }
     else {
-        ////////////////////////   Close Peer Connection   ////////////////////////
+        /* Close Peer Connection */
         if (dc) {
             dc.close();
             dc = null;
@@ -139,10 +187,10 @@ function onSignaling() {
         /* Close peer connection */
         pc.close();
         pc = null;
-        
-        bPeerCreated = false;
-        document.getElementById('media').style.display = 'none';
-        document.getElementById('create-signaling').textContent = "Watch"
+
+        Sn = '';
+        isPeerCreated = false;
+        hideP2PComponents(true);
     }
 }
 
@@ -168,23 +216,25 @@ function createPeerConnection() {
         dc = evt.channel;
 
         dc.onopen = () => {
-            bPeerCreated = true;
-            document.getElementById('create-signaling').textContent = "Close"
+            isPeerCreated = true;
+            hideP2PComponents(false);
+            document.getElementById('button-signaling').innerHTML = '<i class="fas fa-sign-out"></i>';
         };
 
         let dcTimeout = null;
         dc.onmessage = (evt) => {
             if (typeof evt.data !== 'string') {
+                console.log("Can't handle message via data channel");
                 return;
             }
 
-            dcTimeout = setTimeout(() => {
-                if (!dc) {
-                    return;
-                }
-                const message = `Pong ${currentTimestamp()}`;
-                dc.send(message);
-            }, 1000);
+            try {
+                const msg = JSON.parse(evt.data);
+                onMessage(msg);
+            }
+            catch (error) {
+                alert(message.payloadString);
+            }
         }
 
         dc.onclose = () => {
@@ -196,11 +246,26 @@ function createPeerConnection() {
     return pc;
 }
 
+function onMessage(msg) {
+    if (msg.MessageType === "Respond" || msg.MessageType === "Report") {
+        if (msg.Command == "Resource") {
+            document.getElementById('cpu').textContent = msg.Data.CPU;
+            document.getElementById('storage').textContent = msg.Data.Storage;
+            document.getElementById('memory-usage').textContent = msg.Data.MemUsage;
+            document.getElementById('runtime').textContent = msg.Data.Timestamp;
+        }
+        else if (msg.Command == "PANTILT") {
+            
+        }
+    }
+}
+
 async function waitGatheringComplete() {
     return new Promise((resolve) => {
         if (pc.iceGatheringState === 'complete') {
             resolve();
-        } else {
+        } 
+        else {
             pc.addEventListener('icegatheringstatechange', () => {
                 if (pc.iceGatheringState === 'complete') {
                     resolve();
@@ -215,19 +280,12 @@ async function sendAnswer(pc) {
     await waitGatheringComplete();
 
     const answer = pc.localDescription;
-
-    let sn = document.getElementById('product-id').textContent;
-    const msg = JSON.stringify({
-        Method: "SET",
-        Serial: sn,
-        Command: "Request",
-        MessageType: "Signaling",
-        Data: {
-            id: clientId,
-            type: answer.type,
-            sdp: answer.sdp,
-        }
-    });
+    const data = {
+        id: clientId,
+        type: answer.type,
+        sdp: answer.sdp
+    }
+    const msg = templateMessageTypeRequest("Signaling", data);
     performPublish(msg);
 }
 
@@ -257,16 +315,96 @@ function randomId(length) {
 
 /* Helper function convert unix timestamp to datetime human readable */
 function timestampToDatetime(timestamp) {
-    const date = new Date(timestamp * 1000);
+    const d = new Date(timestamp * 1000);
+    return d.toLocaleString();
+}
 
-    // Extract components
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
+/*  Template message request
+*/
+function templateMessageTypeRequest(command, data) {
+    return JSON.stringify({
+        Method: "SET",
+        Sn: Sn,
+        MessageType: "Request",
+        Command: command,
+        Data: data
+    });
+}
 
-    // Format as day/month/year hour:minute:second
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
+/*  Motors direction by data channel
+*/
+function setMotorsDirection(direction) {
+    const data = {
+        Direction: direction
+    };
+    const msg = templateMessageTypeRequest("PANTILT", data);
+    if (dc) {
+        dc.send(msg);
+    }
+}
+
+function changeVideoResolution() {
+    const sel = document.getElementById("resolution-select");
+    const res = sel.value;
+    
+    const data = {
+        Option: 1,                  /* 0/1/2 : IDLE/LIVE/PLAYBACK   */
+        Resolution: parseInt(res)   /* 0/1   : HD/3MP               */
+    };
+    const msg = templateMessageTypeRequest("LIVEVIEW", data);
+    if (dc) {
+        dc.send(msg);
+    }
+}
+
+/*  Update list table devices when devices has online.
+    Create new instance if it's not existed
+*/
+function updateListTableDevices(data) {
+    console.log(data);
+
+    const tbody = document.querySelector("tbody");
+    let existed = Array.from(tbody.rows).find(row => row.cells[1].innerText === data.Sn);
+
+    if (existed) {
+        existed.cells[2].innerText = data.Manufactor;
+        existed.cells[3].innerText = data.Chipset;
+        existed.cells[4].innerText = data.Version;
+        existed.cells[5].innerText = data.Startup;
+        existed.cells[6].innerText = data.LastConnected;
+    }
+    else {
+        const instance = document.createElement("tr");
+        instance.innerHTML = `
+            <td>
+                <button class="icon-button" id="button-signaling" onclick="openSignaling('${data.Sn}')">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </td>
+            <td>${data.Sn}</td>
+            <td>${data.Manufactor}</td>
+            <td>${data.Chipset}</td>
+            <td>${data.Version}</td>
+            <td>${timestampToDatetime(data.Startup)}</td>
+            <td>${timestampToDatetime(data.LastConnected)}</td>
+        `;
+        tbody.appendChild(instance);
+    }
+}
+
+/* Show/Hide P2P components
+*/
+function hideP2PComponents(boolean) {
+    if (!boolean) {
+        document.getElementById('media').style.display = 'block';
+        document.getElementById('bottom-pane').style.display = 'block';
+        document.getElementById('ipc-resource').style.display = 'block';
+        document.getElementById('resolution-display').style.display = 'block';
+    }
+    else {
+        document.getElementById('media').style.display = 'none';
+        document.getElementById('bottom-pane').style.display = 'none';
+        document.getElementById('ipc-resource').style.display = 'none';
+        document.getElementById('resolution-display').style.display = 'none';
+    }
 }
