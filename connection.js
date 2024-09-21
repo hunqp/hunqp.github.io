@@ -331,18 +331,6 @@ function templateMessageTypeRequest(command, data) {
     });
 }
 
-/*  Motors direction by data channel
-*/
-function setMotorsDirection(direction) {
-    const data = {
-        Direction: direction
-    };
-    const msg = templateMessageTypeRequest("PANTILT", data);
-    if (dc) {
-        dc.send(msg);
-    }
-}
-
 function changeVideoResolution() {
     const sel = document.getElementById("resolution-select");
     const res = sel.value;
@@ -408,3 +396,66 @@ function hideP2PComponents(boolean) {
         document.getElementById('resolution-display').style.display = 'none';
     }
 }
+
+
+
+
+
+/*  Motors direction by data channel
+*/
+function setMotorsDirection(direction) {
+    const data = {
+        Direction: direction
+    };
+    const msg = templateMessageTypeRequest("PANTILT", data);
+    if (dc) {
+        dc.send(msg);
+    }
+}
+
+const TILTUP = document.getElementById('motor-up');
+const PANLEFT = document.getElementById('motor-left');
+const PANRIGHT = document.getElementById('motor-right');
+const TILTDOWN = document.getElementById('motor-down');
+
+let holdInterval; // To track the interval of holding
+
+TILTUP.addEventListener('mousedown', () => {
+    holdInterval = setInterval(() => {
+        setMotorsDirection("UP");
+    }, 200);
+});
+
+PANLEFT.addEventListener('mousedown', () => {
+    holdInterval = setInterval(() => {
+        setMotorsDirection("LEFT");
+    }, 200);
+});
+
+PANRIGHT.addEventListener('mousedown', () => {
+    holdInterval = setInterval(() => {
+        setMotorsDirection("RIGHT");
+    }, 200);
+});
+
+TILTDOWN.addEventListener('mousedown', () => {
+    holdInterval = setInterval(() => {
+        setMotorsDirection("DOWN");
+    }, 200);
+});
+
+TILTUP.addEventListener('mouseup', () => {
+    clearInterval(holdInterval);
+});
+
+PANLEFT.addEventListener('mouseup', () => {
+    clearInterval(holdInterval);
+});
+
+PANRIGHT.addEventListener('mouseup', () => {
+    clearInterval(holdInterval);
+});
+
+TILTDOWN.addEventListener('mouseup', () => {
+    clearInterval(holdInterval);
+});
