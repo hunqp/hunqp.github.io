@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="connection.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <title>IPC</title>
@@ -45,25 +44,25 @@
                     </table>
                 </div>
             </div>
+
             <div class="bottom-pane" id="bottom-pane">
                 <div class="tab-container">
                     <button class="tab active" onclick="showContent('left')">PAN-TILT</button>
                     <button class="tab" onclick="showContent('right')">Records</button>
                 </div>
-
                 <div id="bottom-left" class="content active">
                     <!-- Bottom Left Content -->
                     <div class="arrow-buttons">
                         <div class="arrow-row">
-                            <button class="arrow-button" id="motor-up" onclick="setMotorsDirection('UP')">↑</button>
+                            <button class="arrow-button" id="motor-up">↑</button>
                         </div>
                         <div class="arrow-row">
-                            <button class="arrow-button" id="motor-left" onclick="setMotorsDirection('LEFT')">←</button>
+                            <button class="arrow-button" id="motor-left">←</button>
                             <button class="arrow-button"></button>
-                            <button class="arrow-button" id="motor-right" onclick="setMotorsDirection('RIGHT')">→</button>
+                            <button class="arrow-button" id="motor-right">→</button>
                         </div>
                         <div class="arrow-row">
-                            <button class="arrow-button" id="motor-down" onclick="setMotorsDirection('DOWN')">↓</button>
+                            <button class="arrow-button" id="motor-down">↓</button>
                         </div>
                     </div>
                 </div>
@@ -138,5 +137,7 @@
             </div>
         </div>
     </div>
+
+    <script src="connection.js" type="text/javascript"></script>
 </body>
 </html>
