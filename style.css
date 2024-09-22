@@ -108,6 +108,7 @@ body, html {
     background-color: #004c45; /* Darker shade on hover */
 }
 
+
 .joystick {
     position: relative;
     width: 200px;
@@ -130,6 +131,50 @@ body, html {
     cursor: pointer;
     transition: transform 0.1s;
 }
+
+.arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none; /* Prevent mouse events */
+}
+
+.up {
+    bottom: 80%; /* Position above */
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #444; /* Triangle color */
+}
+
+.down {
+    top: 80%; /* Position below */
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 20px solid #444; /* Triangle color */
+}
+
+.left {
+    right: 80%; /* Position to the left */
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 20px solid #444; /* Triangle color */
+}
+
+.right {
+    left: 80%; /* Position to the right */
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 20px solid #444; /* Triangle color */
+}
+
 
 .right-pane {
     flex: 1;
@@ -251,70 +296,4 @@ video {
 .top-pane {
     overflow-x: auto; /* Allow horizontal scrolling for the top pane */
 }
-}
-
-.joystick {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    background-color: #ccc;
-    border-radius: 50%;
-    border: 2px solid #666;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-.stick {
-    width: 60px;
-    height: 60px;
-    background-color: #444;
-    border-radius: 50%;
-    position: absolute;
-    cursor: pointer;
-    transition: transform 0.1s;
-}
-
-.arrow {
-    position: absolute;
-    width: 0;
-    height: 0;
-    pointer-events: none; /* Prevent mouse events */
-}
-
-.up {
-    bottom: 80%; /* Position above */
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 20px solid #444; /* Triangle color */
-}
-
-.down {
-    top: 80%; /* Position below */
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 20px solid #444; /* Triangle color */
-}
-
-.left {
-    right: 80%; /* Position to the left */
-    top: 50%;
-    transform: translateY(-50%);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-right: 20px solid #444; /* Triangle color */
-}
-
-.right {
-    left: 80%; /* Position to the right */
-    top: 50%;
-    transform: translateY(-50%);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-left: 20px solid #444; /* Triangle color */
 }
