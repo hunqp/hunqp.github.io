@@ -108,6 +108,29 @@ body, html {
     background-color: #004c45; /* Darker shade on hover */
 }
 
+.joystick {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    background-color: #ccc;
+    border-radius: 50%;
+    border: 2px solid #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.stick {
+    width: 60px;
+    height: 60px;
+    background-color: #444;
+    border-radius: 50%;
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
 .right-pane {
     flex: 1;
     background-color: #e0e0e0;
