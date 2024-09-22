@@ -397,22 +397,8 @@ function hideP2PComponents(boolean) {
     }
 }
 
-
-
-
-
 /*  Motors direction by data channel
 */
-function setMotorsDirection(direction) {
-    const data = {
-        Direction: direction
-    };
-    const msg = templateMessageTypeRequest("PANTILT", data);
-    if (dc) {
-        dc.send(msg);
-    }
-}
-
 const TILTUP = document.getElementById('motor-up');
 const PANLEFT = document.getElementById('motor-left');
 const PANRIGHT = document.getElementById('motor-right');
@@ -420,42 +406,59 @@ const TILTDOWN = document.getElementById('motor-down');
 
 let holdInterval; // To track the interval of holding
 
-TILTUP.addEventListener('mousedown', () => {
+function onJoyStickHolding(direction) {
     holdInterval = setInterval(() => {
-        setMotorsDirection("UP");
+        const data = {
+            Direction: direction
+        };
+        const msg = templateMessageTypeRequest("PANTILT", data);
+        if (dc) {
+            dc.send(msg);
+        }
     }, 200);
-});
+}
 
-PANLEFT.addEventListener('mousedown', () => {
-    holdInterval = setInterval(() => {
-        setMotorsDirection("LEFT");
-    }, 200);
-});
-
-PANRIGHT.addEventListener('mousedown', () => {
-    holdInterval = setInterval(() => {
-        setMotorsDirection("RIGHT");
-    }, 200);
-});
-
-TILTDOWN.addEventListener('mousedown', () => {
-    holdInterval = setInterval(() => {
-        setMotorsDirection("DOWN");
-    }, 200);
-});
-
-TILTUP.addEventListener('mouseup', () => {
+function onJoyStickRelease() {
     clearInterval(holdInterval);
+}
+
+TILTUP.addEventListener('mousedown', onJoyStickHolding);
+TILTUP.addEventListener('mouseup', onJoyStickRelease);
+TILTUP.addEventListener('mouseleave', onJoyStickRelease);
+TILTUP.addEventListener('touchend', onJoyStickRelease);
+TILTUP.addEventListener('touchcancel', onJoyStickRelease);
+/* Touch events for mobile */
+TILTUP.addEventListener('touchstart', (e) => {
+    e.preventDefault(); /* Prevents default behavior (like scrolling) */
+    onJoyStickHolding("UP");
 });
 
-PANLEFT.addEventListener('mouseup', () => {
-    clearInterval(holdInterval);
+PANLEFT.addEventListener('mousedown', onJoyStickHolding);
+PANLEFT.addEventListener('mouseup', onJoyStickRelease);
+PANLEFT.addEventListener('mouseleave', onJoyStickRelease);
+PANLEFT.addEventListener('touchend', onJoyStickRelease);
+PANLEFT.addEventListener('touchcancel', onJoyStickRelease);
+PANLEFT.addEventListener('touchstart', (e) => {
+    e.preventDefault(); /* Prevents default behavior (like scrolling) */
+    onJoyStickHolding("LEFT");
 });
 
-PANRIGHT.addEventListener('mouseup', () => {
-    clearInterval(holdInterval);
+PANRIGHT.addEventListener('mousedown', onJoyStickHolding);
+PANRIGHT.addEventListener('mouseup', onJoyStickRelease);
+PANRIGHT.addEventListener('mouseleave', onJoyStickRelease);
+PANRIGHT.addEventListener('touchend', onJoyStickRelease);
+PANRIGHT.addEventListener('touchcancel', onJoyStickRelease);
+PANRIGHT.addEventListener('touchstart', (e) => {
+    e.preventDefault(); /* Prevents default behavior (like scrolling) */
+    onJoyStickHolding("RIGHT");
 });
 
-TILTDOWN.addEventListener('mouseup', () => {
-    clearInterval(holdInterval);
+TILTDOWN.addEventListener('mousedown', onJoyStickHolding);
+TILTDOWN.addEventListener('mouseup', onJoyStickRelease);
+TILTDOWN.addEventListener('mouseleave', onJoyStickRelease);
+TILTDOWN.addEventListener('touchend', onJoyStickRelease);
+TILTDOWN.addEventListener('touchcancel', onJoyStickRelease);
+TILTDOWN.addEventListener('touchstart', (e) => {
+    e.preventDefault(); /* Prevents default behavior (like scrolling) */
+    onJoyStickHolding("DOWN");
 });
