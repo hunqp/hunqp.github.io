@@ -399,12 +399,12 @@ function hideP2PComponents(boolean) {
 
 /*  Motors direction by data channel
 */
-const TILTUP = document.getElementById('motor-up');
-const PANLEFT = document.getElementById('motor-left');
-const PANRIGHT = document.getElementById('motor-right');
-const TILTDOWN = document.getElementById('motor-down');
+// const TILTUP = document.getElementById('motor-up');
+// const PANLEFT = document.getElementById('motor-left');
+// const PANRIGHT = document.getElementById('motor-right');
+// const TILTDOWN = document.getElementById('motor-down');
 
-let holdInterval; // To track the interval of holding
+// let holdInterval; // To track the interval of holding
 
 function onJoyStickHolding(direction) {
     holdInterval = setInterval(() => {
@@ -422,43 +422,115 @@ function onJoyStickRelease() {
     clearInterval(holdInterval);
 }
 
-TILTUP.addEventListener('mousedown', onJoyStickHolding);
-TILTUP.addEventListener('mouseup', onJoyStickRelease);
-TILTUP.addEventListener('mouseleave', onJoyStickRelease);
-TILTUP.addEventListener('touchend', onJoyStickRelease);
-TILTUP.addEventListener('touchcancel', onJoyStickRelease);
-/* Touch events for mobile */
-TILTUP.addEventListener('touchstart', (e) => {
-    e.preventDefault(); /* Prevents default behavior (like scrolling) */
-    onJoyStickHolding("UP");
-});
+// TILTUP.addEventListener('mousedown', onJoyStickHolding);
+// TILTUP.addEventListener('mouseup', onJoyStickRelease);
+// TILTUP.addEventListener('mouseleave', onJoyStickRelease);
+// TILTUP.addEventListener('touchend', onJoyStickRelease);
+// TILTUP.addEventListener('touchcancel', onJoyStickRelease);
+// /* Touch events for mobile */
+// TILTUP.addEventListener('touchstart', (e) => {
+//     e.preventDefault(); /* Prevents default behavior (like scrolling) */
+//     onJoyStickHolding("UP");
+// });
 
-PANLEFT.addEventListener('mousedown', onJoyStickHolding);
-PANLEFT.addEventListener('mouseup', onJoyStickRelease);
-PANLEFT.addEventListener('mouseleave', onJoyStickRelease);
-PANLEFT.addEventListener('touchend', onJoyStickRelease);
-PANLEFT.addEventListener('touchcancel', onJoyStickRelease);
-PANLEFT.addEventListener('touchstart', (e) => {
-    e.preventDefault(); /* Prevents default behavior (like scrolling) */
-    onJoyStickHolding("LEFT");
-});
+// PANLEFT.addEventListener('mousedown', onJoyStickHolding);
+// PANLEFT.addEventListener('mouseup', onJoyStickRelease);
+// PANLEFT.addEventListener('mouseleave', onJoyStickRelease);
+// PANLEFT.addEventListener('touchend', onJoyStickRelease);
+// PANLEFT.addEventListener('touchcancel', onJoyStickRelease);
+// PANLEFT.addEventListener('touchstart', (e) => {
+//     e.preventDefault(); /* Prevents default behavior (like scrolling) */
+//     onJoyStickHolding("LEFT");
+// });
 
-PANRIGHT.addEventListener('mousedown', onJoyStickHolding);
-PANRIGHT.addEventListener('mouseup', onJoyStickRelease);
-PANRIGHT.addEventListener('mouseleave', onJoyStickRelease);
-PANRIGHT.addEventListener('touchend', onJoyStickRelease);
-PANRIGHT.addEventListener('touchcancel', onJoyStickRelease);
-PANRIGHT.addEventListener('touchstart', (e) => {
-    e.preventDefault(); /* Prevents default behavior (like scrolling) */
-    onJoyStickHolding("RIGHT");
-});
+// PANRIGHT.addEventListener('mousedown', onJoyStickHolding);
+// PANRIGHT.addEventListener('mouseup', onJoyStickRelease);
+// PANRIGHT.addEventListener('mouseleave', onJoyStickRelease);
+// PANRIGHT.addEventListener('touchend', onJoyStickRelease);
+// PANRIGHT.addEventListener('touchcancel', onJoyStickRelease);
+// PANRIGHT.addEventListener('touchstart', (e) => {
+//     e.preventDefault(); /* Prevents default behavior (like scrolling) */
+//     onJoyStickHolding("RIGHT");
+// });
 
-TILTDOWN.addEventListener('mousedown', onJoyStickHolding);
-TILTDOWN.addEventListener('mouseup', onJoyStickRelease);
-TILTDOWN.addEventListener('mouseleave', onJoyStickRelease);
-TILTDOWN.addEventListener('touchend', onJoyStickRelease);
-TILTDOWN.addEventListener('touchcancel', onJoyStickRelease);
-TILTDOWN.addEventListener('touchstart', (e) => {
-    e.preventDefault(); /* Prevents default behavior (like scrolling) */
-    onJoyStickHolding("DOWN");
+// TILTDOWN.addEventListener('mousedown', onJoyStickHolding);
+// TILTDOWN.addEventListener('mouseup', onJoyStickRelease);
+// TILTDOWN.addEventListener('mouseleave', onJoyStickRelease);
+// TILTDOWN.addEventListener('touchend', onJoyStickRelease);
+// TILTDOWN.addEventListener('touchcancel', onJoyStickRelease);
+// TILTDOWN.addEventListener('touchstart', (e) => {
+//     e.preventDefault(); /* Prevents default behavior (like scrolling) */
+//     onJoyStickHolding("DOWN");
+// });
+
+const joystick = document.getElementById('joystick');
+const stick = document.querySelector('.stick');
+let isMoving = false;
+let holdInterval;
+
+function startMove(event) {
+    isMoving = true;
+    moveStick(event);
+    event.preventDefault(); /* Prevent scrolling on touch devices */
+}
+
+function moveStick(event) {
+    const rect = joystick.getBoundingClientRect();
+    const offsetX = (event.touches ? event.touches[0].clientX : event.clientX) - rect.left - joystick.clientWidth / 2;
+    const offsetY = (event.touches ? event.touches[0].clientY : event.clientY) - rect.top - joystick.clientHeight / 2;
+
+    const stickX = Math.max(-70, Math.min(70, offsetX));
+    const stickY = Math.max(-70, Math.min(70, offsetY));
+
+    stick.style.transform = `translate(${stickX}px, ${stickY}px)`;
+
+    // Determine direction
+    let direction = '';
+    if (Math.abs(stickX) > Math.abs(stickY)) {
+        direction = stickX > 0 ? 'RIGHT' : 'LEFT';
+    }
+    else {
+        direction = stickY > 0 ? 'DOWN' : 'UP';
+    }
+
+    // Send direction commands to your PTZ camera
+    // For example: sendPTZCommand(direction);
+    clearInterval(holdInterval);
+    holdInterval = setInterval(() => {
+        console.log(`Direction: ${direction}`);
+        const data = {
+            Direction: direction
+        };
+        const msg = templateMessageTypeRequest("PANTILT", data);
+        if (dc) {
+            dc.send(msg);
+        }
+    }, 200);
+}
+
+function resetStick() {
+    stick.style.transform = 'translate(0, 0)';
+    clearInterval(holdInterval);
+}
+
+// Handle mouse events
+joystick.addEventListener('mousedown', startMove);
+joystick.addEventListener('mousemove', (event) => {
+    if (isMoving) moveStick(event);
 });
+joystick.addEventListener('mouseup', () => {
+    isMoving = false;
+    resetStick();
+});
+joystick.addEventListener('mouseleave', resetStick);
+
+// Handle touch events
+joystick.addEventListener('touchstart', startMove);
+joystick.addEventListener('touchmove', (event) => {
+    if (isMoving) moveStick(event);
+});
+joystick.addEventListener('touchend', () => {
+    isMoving = false;
+    resetStick();
+});
+joystick.addEventListener('touchcancel', resetStick);
